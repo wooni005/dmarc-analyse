@@ -1,0 +1,13 @@
+LOG_FILE="/root/dmarc-analyse/dmarc-report.log"
+TO_EMAIL_ADDRESS="your-dest@email"
+
+/root/dmarc-analyse/dmarc-analyse.py > $LOG_FILE
+RETVAL=$?
+
+if [ $RETVAL -eq 0 ]; then
+    mail -s "OK: DMARC report: All emails OK" $TO_EMAIL_ADDRESS < $LOG_FILE
+elif [ $RETVAL -eq 2 ]; then
+    mail -s "WARNING: DMARC report: No DMARC reports to process in this folder" $TO_EMAIL_ADDRESS < $LOG_FILE
+else # [ $? -eq 2 ]; then
+    mail -s "FAIL: DMARC report: Problems detected" $TO_EMAIL_ADDRESS < $LOG_FILE
+fi

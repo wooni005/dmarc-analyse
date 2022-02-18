@@ -1,0 +1,6 @@
+IMAP_HOST = 'imap.yourhost.com' # Or Gmail: 'imap.gmail.com'
+IMAP_PORT = 993
+USERNAME = 'your@email'
+PASSWORD = 'yourPassword'
+MAILBOX_FOLDER = 'VPS/DMARC'  # Put here your mailbox folder
+TO_EMAIL_ADDRESS="your-dest@email"
