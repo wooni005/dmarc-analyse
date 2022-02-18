@@ -1,4 +1,4 @@
-# dmarc_analyse
+# dmarc-analyse
 
 Tool to analyse DMARC reports in IMAP an folder and optionally send every day or week a report via email
 
@@ -6,8 +6,8 @@ Tool to analyse DMARC reports in IMAP an folder and optionally send every day or
 
 ```bash
 $ cd /root
-$ mkdir dmarc-analyse
-$ wget https://github.com/wooni005/dmarc_analyse.git
+$ git clone https://github.com/wooni005/dmarc_analyse.git
+$ cd dmarc-analyse
 $ chmod +x dmarc-analyse.*
 ```
 
