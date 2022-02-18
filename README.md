@@ -12,11 +12,20 @@ $ chmod +x dmarc-analyse.*
 ```
 
 Install the required Python3 modules:
+
 ```bash
 $ pip3 install IMAPClient email
 ```
 
 ## Configuration
+
+First copy the 2 example files into work files:
+
+```bash
+$ cd dmarc-analyse
+$ cp config.py.example config.py
+$ cp dmarc-analyse.sh.example dmarc-analyse.sh
+```
 
 Fill in your IMAP mailserver settings and the corresponding credentials to read the IMAP folder
 
@@ -39,12 +48,15 @@ TO_EMAIL_ADDRESS="your@email"
 ```
 
 ## Test the script
+
 If you've some DMARC reports in your VPS/DMARC folder, you can execute the script.
+
 ```
 $ ./dmarc-analyse.py
 ```
 
 The Python script only processes the unread reports. To read all reports, use the --all option
+
 ```
 $ ./dmarc-analyse.py --all
 ```
@@ -64,6 +76,7 @@ $ nano /etc/crontab
 ## Email report
 
 This is an example of a report:
+
 ```
 Analyzing DMARC reports in the IMAP folder 'VPS/DMARC' (user: your@email)
 
