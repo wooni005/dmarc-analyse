@@ -41,7 +41,7 @@ MAILBOX_FOLDER = 'VPS/DMARC'
 And change the email address in the dmarc-analyse.sh script:
 
 ```bash
-$ nano dmarc-analyse.py
+$ nano dmarc-analyse.sh
 ...
 TO_EMAIL_ADDRESS="your@email"
 ...
