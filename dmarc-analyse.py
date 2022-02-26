@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from imapclient import IMAPClient
-from datetime import datetime
+import datetime
 import os
 import sys
 import traceback
@@ -61,7 +61,7 @@ def getDMARCreportAttachment(msg):
                 reportEndDate = int(xml.find("report_metadata/date_range/end").text)
                 reportFromDomain = xml.find("policy_published/domain").text
 
-                print("Report: %-14s for %12s (Period %s - %s)" % (reportSource, reportFromDomain, datetime.fromtimestamp(reportBeginDate), datetime.fromtimestamp(reportEndDate)))
+                print("Report: %-14s for %12s (Period %s - %s)" % (reportSource, reportFromDomain, datetime.datetime.fromtimestamp(reportBeginDate), datetime.datetime.fromtimestamp(reportEndDate)))
 
                 recordCount = 0
                 msgReportCount = 0
@@ -73,7 +73,12 @@ def getDMARCreportAttachment(msg):
                         recordCount += 1
                         failDetected = False
                         sourceIp = record.find("row/source_ip").text
-                        domainName = socket.gethostbyaddr(sourceIp)[0]
+                        try:
+                            domainName = socket.gethostbyaddr(sourceIp)[0]
+                        except  Exception as e:
+                            domainName = 'No hostname found'
+                            # print("Exception: %s" % str(e))
+
                         count = int(record.find("row/count").text)
                         headerFrom = record.find("identifiers/header_from").text
                         # for selector in record.findall("auth_results/dkim/selector"):
@@ -133,10 +138,19 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == "--test":
         readAllReports = True
         MAILBOX_FOLDER = 'Techniek/VPS/DMARC/Old'
+    elif sys.argv[1] == "--today":
+        cmndLineOption = sys.argv[1]
+    elif sys.argv[1] == "--yesterday":
+        cmndLineOption = sys.argv[1]
+    elif sys.argv[1] == "--unread":
+        cmndLineOption = sys.argv[1]
     else:
         print("DMARC analyse reports options:")
         print("    no parameters (default): Ready only unread report messages")
         print("    --all: Read all report messages, also already processed (read) messages")
+        print("    --today: Read todays report messages")
+        print("    --yesterday: Read yesterdays report messages")
+        print("    --unread: Read the unread report messages")
         print("    --test: Read all report messages from the Old folder")
         print("    --help: this help")
         exit(0)
@@ -152,10 +166,18 @@ with IMAPClient(config.IMAP_HOST, use_uid=True, ssl=config.IMAP_PORT) as server:
         # Read all reports in the selected folder
         # messages = server.search("X-GM-RAW has:attachment")
         messages = server.gmail_search("has:attachment")
+    elif cmndLineOption == '--today':
+        # Read todays reports in the selected folder
+        messages = server.search([u'SINCE', datetime.datetime.utcnow().date()])
+    elif cmndLineOption == '--yesterday':
+        # Read todays reports in the selected folder
+        yesterday = datetime.datetime.utcnow().date() - datetime.timedelta(days=1)
+        messages = server.search([u'SINCE', yesterday])
+    elif cmndLineOption == '--unread':
+        # Read the unread reports in the selected folder
+        messages = server.search([u'UNSEEN'])
     else:
         # Read only the unprocessed/unread reports
-        # messages = server.search([u'UNSEEN'])
-        # messages = server.search([u'SINCE', datetime.today()])
         messages = server.gmail_search("has:attachment in:unread")
 
     failDetectedInDMARCReport = False
