@@ -130,6 +130,7 @@ def getDMARCreportAttachment(msg):
                 failDetectedInReport = True
     return failDetectedInReport
 
+cmndLineOption = ''
 
 if len(sys.argv) > 1:
     # Command line options are given
@@ -164,8 +165,8 @@ with IMAPClient(config.IMAP_HOST, use_uid=True, ssl=config.IMAP_PORT) as server:
     
     if readAllReports:
         # Read all reports in the selected folder
-        # messages = server.search("X-GM-RAW has:attachment")
-        messages = server.gmail_search("has:attachment")
+        messages = server.search()
+        # messages = server.gmail_search("has:attachment")
     elif cmndLineOption == '--today':
         # Read todays reports in the selected folder
         messages = server.search([u'SINCE', datetime.datetime.utcnow().date()])
@@ -178,7 +179,8 @@ with IMAPClient(config.IMAP_HOST, use_uid=True, ssl=config.IMAP_PORT) as server:
         messages = server.search([u'UNSEEN'])
     else:
         # Read only the unprocessed/unread reports
-        messages = server.gmail_search("has:attachment in:unread")
+        # messages = server.gmail_search("has:attachment in:unread")
+        messages = server.search([u'UNSEEN'])
 
     failDetectedInDMARCReport = False
     noDMARCreportsToProcess = False
