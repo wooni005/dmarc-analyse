@@ -18,6 +18,7 @@ import config
 messageTotalCounter = 0
 msgFailTotalCounter = 0
 readAllReports = False
+showReportDetails = False
 
 # Search for attachments
 def getDMARCreportAttachment(msg):
@@ -110,7 +111,8 @@ def getDMARCreportAttachment(msg):
                             print("    - record %d: FAIL: %d mail(s) send from: %s (More info at https://whatismyipaddress.com/ip/%s)" % (recordCount, count, domainName, sourceIp))
                             # print()
                         else:
-                            print("    - record %d: OK! %3d email(s) checked send from: %-25s (IP: %s)" % (recordCount, count, domainName, sourceIp))
+                            if showReportDetails:
+                                print("    - record %d: OK! %3d email(s) checked send from: %-25s (IP: %s)" % (recordCount, count, domainName, sourceIp))
 
                     except Exception as e:
                         print("Exception: %s" % str(e))
@@ -132,29 +134,34 @@ def getDMARCreportAttachment(msg):
 
 cmndLineOption = ''
 
-if len(sys.argv) > 1:
-    # Command line options are given
-    if sys.argv[1] == "--all":
-        readAllReports = True
-    elif sys.argv[1] == "--test":
-        readAllReports = True
-        MAILBOX_FOLDER = 'Techniek/VPS/DMARC/Old'
-    elif sys.argv[1] == "--today":
-        cmndLineOption = sys.argv[1]
-    elif sys.argv[1] == "--yesterday":
-        cmndLineOption = sys.argv[1]
-    elif sys.argv[1] == "--unread":
-        cmndLineOption = sys.argv[1]
-    else:
-        print("DMARC analyse reports options:")
-        print("    no parameters (default): Ready only unread report messages")
-        print("    --all: Read all report messages, also already processed (read) messages")
-        print("    --today: Read todays report messages")
-        print("    --yesterday: Read yesterdays report messages")
-        print("    --unread: Read the unread report messages")
-        print("    --test: Read all report messages from the Old folder")
-        print("    --help: this help")
-        exit(0)
+for idx, arg in enumerate(sys.argv):
+    print("%d: Arg: %s" % (idx, arg))
+    if idx != 0:
+        if arg == "--details":
+            showReportDetails = True
+        # Command line options are given
+        if arg == "--all":
+            readAllReports = True
+        elif arg == "--test":
+            readAllReports = True
+            MAILBOX_FOLDER = 'Techniek/VPS/DMARC/Old'
+        elif arg == "--today":
+            cmndLineOption = arg
+        elif arg == "--yesterday":
+            cmndLineOption = arg
+        elif arg == "--unread":
+            cmndLineOption = arg
+        if arg == "--help":
+            print("DMARC analyse reports options:")
+            print("    no parameters (default): Ready only unread report messages")
+            print("    --details: Show also details for non error records")
+            print("    --all: Read all report messages, also already processed (read) messages")
+            print("    --today: Read todays report messages")
+            print("    --yesterday: Read yesterdays report messages")
+            print("    --unread: Read the unread report messages")
+            print("    --test: Read all report messages from the Old folder")
+            print("    --help: this help")
+            exit(0)
 
 with IMAPClient(config.IMAP_HOST, use_uid=True, ssl=config.IMAP_PORT) as server:  # Get the host connection with SSL security
     server.login(config.USERNAME, config.PASSWORD)  # Signing in with IMAP credentials
