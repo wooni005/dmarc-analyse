@@ -135,7 +135,6 @@ def getDMARCreportAttachment(msg):
 cmndLineOption = ''
 
 for idx, arg in enumerate(sys.argv):
-    print("%d: Arg: %s" % (idx, arg))
     if idx != 0:
         if arg == "--details":
             showReportDetails = True
